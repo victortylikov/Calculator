@@ -11,7 +11,7 @@ public class CalculatorMain {
 		String line=calculator.read("C://calculator.txt");
 	    System.out.println(line);
 		calculator.calculate(line);
-
+//nmbv
 	}
 
 }
