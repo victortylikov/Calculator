@@ -63,7 +63,7 @@ public class Calculator {
 							calculateMultiplyAndDivide(newCharArrayList);
 							
 							calculateMinusAndPlus(newCharArrayList);
-									
+									//
 							//charArrayList.remove(j);
 							flag = true;
 							
