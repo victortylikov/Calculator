@@ -34,6 +34,7 @@ public class Calculator {
 			charArrayList.add(c);
 		}
 		findBrace(charArrayList);
+	
 	}
 
 	private void findBrace(List<Character> charArrayList) {
@@ -46,18 +47,26 @@ public class Calculator {
 					charArrayList.remove(i);
 					for (int j = i; j >= 0; j--) {
 						if (charArrayList.get(j) == '(') {
-						List<Character> newCharArrayList = charArrayList
-									.subList(j, i);
-						
-							calculateMultiplyAndDivide(newCharArrayList);
-
-							calculateMinusAndPlus(newCharArrayList);
-							charArrayList.remove(j);
 							for (char c : charArrayList) {
 								System.out.print(c);
 							}
+							System.out.print("AAAAAA");
 							
+							List<Character> newCharArrayList = charArrayList
+									.subList(++j, i);
+							System.out.println();
+							for (char c : newCharArrayList) {
+								System.out.print(c);
+							}
+							System.out.println();
+							
+							calculateMultiplyAndDivide(newCharArrayList);
+							
+							calculateMinusAndPlus(newCharArrayList);
+									
+							//charArrayList.remove(j);
 							flag = true;
+							
 							break outer;
 
 						}
@@ -89,6 +98,7 @@ public class Calculator {
 
 						resultAB = numberAndPositionA.getNumber()
 								/ numberAndPositionB.getNumber();
+						
 					}
 					newCharArrayList = replaceList(newCharArrayList,
 							numberAndPositionA.getPosition(),
@@ -132,6 +142,7 @@ public class Calculator {
 				}
 			}
 		} while (resultAB != null);
+		
 		return newCharArrayList;
 
 	}
@@ -147,7 +158,7 @@ public class Calculator {
 		}
 		numberAndPositionA
 				.setNumber(Double.parseDouble(s.reverse().toString()));
-
+		
 		return numberAndPositionA;
 
 	}
@@ -157,33 +168,18 @@ public class Calculator {
 		StringBuilder s = new StringBuilder();
 		while ((newCharArrayList.size() > ++k)
 				&& ((Character.getNumericValue(newCharArrayList.get(k)) >= 0) || (newCharArrayList
-						.get(k) == '.'))) {
+						.get(k) == '.')||(newCharArrayList
+								.get(k) == '-'))) {
 			s.append(newCharArrayList.get(k));
 			numberAndPositionB.setPosition(k);
 		}
 
 		numberAndPositionB.setNumber(Double.parseDouble(s.toString()));
+		
 		return numberAndPositionB;
 
 	}
 
-	/*
-	 * public void someMethod(String stringLine){ char[] charArray =
-	 * stringLine.toCharArray();
-	 * 
-	 * for (int i = 0; i < charArray.length; i++) { if
-	 * (Character.getNumericValue(charArray[i]) == -1) {
-	 * System.out.println(charArray[i]); } else { StringBuilder s = new
-	 * StringBuilder().append(charArray[i]); while
-	 * ((Character.getNumericValue(charArray[++i]) != -1) || (charArray[i] ==
-	 * '.')) { s.append(charArray[i]); } --i;
-	 * 
-	 * System.out.println(s);
-	 * 
-	 * }
-	 * 
-	 * } }
-	 */
 
 	private List<Character> replaceList(List<Character> newCharArrayList,
 			int positionA, int positionB, Double resultAB) {
