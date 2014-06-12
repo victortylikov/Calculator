@@ -37,65 +37,112 @@ public class Calculator {
 	}
 
 	private void findBrace(List<Character> charArrayList) {
-		outer: for (int i = 0; i < charArrayList.size(); i++) {
-			if (charArrayList.get(i) == ')') {
-				for (int j = i; j >= 0; j--) {
-					if (charArrayList.get(j) == '(') {
+		boolean flag = false;
+		do {
+			outer:
+
+			for (int i = 0; i < charArrayList.size(); i++) {
+				if (charArrayList.get(i) == ')') {
+					charArrayList.remove(i);
+					for (int j = i; j >= 0; j--) {
+						if (charArrayList.get(j) == '(') {
 						List<Character> newCharArrayList = charArrayList
-								.subList(++j, i);
-						for(char c:newCharArrayList){
-							System.out.print(c);
+									.subList(j, i);
+						
+							calculateMultiplyAndDivide(newCharArrayList);
+
+							calculateMinusAndPlus(newCharArrayList);
+							charArrayList.remove(j);
+							for (char c : charArrayList) {
+								System.out.print(c);
+							}
+							
+							flag = true;
+							break outer;
+
 						}
-
-						/*
-						 *  System.out.print(j + " ");
-						 * System.out.println(charArray[j]); System.out.print(i
-						 * + " "); System.out.println(charArray[--i]);
-						 * 
-						 * 
-						 * for (int k = 0; k < newCharArray.length; k++) {
-						 * System.out.println(newCharArray[k]); }
-						 * 
-						 * calculateMultiplyAndDivide(newCharArray);
-						 */
-
-						break outer;
-
 					}
 				}
+				flag = false;
 			}
-		}
-
+		} while (flag == true);
 	}
 
-	private Double calculateMultiplyAndDivide(char[] newCharArray) {
+	private List<Character> calculateMultiplyAndDivide(
+			List<Character> newCharArrayList) {
 		Double resultAB = null;
-		for (int k = 0; k < newCharArray.length; k++) {
-			if ((newCharArray[k] == '/') || (newCharArray[k] == '*')) {
-				NumberAndPosition numberAndPositionA = findA(newCharArray, k);
-				NumberAndPosition numberAndPositionB = findB(newCharArray, k);
-				if (newCharArray[k] == '*') {
-					resultAB = numberAndPositionA.getNumber()
-							* numberAndPositionB.getNumber();
+		do {
+			resultAB = null;
+			for (int k = 0; k < newCharArrayList.size(); k++) {
+				if ((newCharArrayList.get(k) == '/')
+						|| (newCharArrayList.get(k) == '*')) {
+					NumberAndPosition numberAndPositionA = findA(
+							newCharArrayList, k);
+					NumberAndPosition numberAndPositionB = findB(
+							newCharArrayList, k);
 
-				} else if (newCharArray[k] == '/') {
-					resultAB = numberAndPositionA.getNumber()
-							/ numberAndPositionB.getNumber();
+					if (newCharArrayList.get(k) == '*') {
+						resultAB = numberAndPositionA.getNumber()
+								* numberAndPositionB.getNumber();
+
+					} else if (newCharArrayList.get(k) == '/') {
+
+						resultAB = numberAndPositionA.getNumber()
+								/ numberAndPositionB.getNumber();
+					}
+					newCharArrayList = replaceList(newCharArrayList,
+							numberAndPositionA.getPosition(),
+							numberAndPositionB.getPosition(), resultAB);
+
+					break;
 				}
-
-				break;
 			}
-		}
+		} while (resultAB != null);
 
-		return resultAB;
+		return newCharArrayList;
 	}
 
-	private NumberAndPosition findA(char[] newCharArray, int k) {
+	private List<Character> calculateMinusAndPlus(
+			List<Character> newCharArrayList) {
+		Double resultAB = null;
+		do {
+			resultAB = null;
+			for (int k = 0; k < newCharArrayList.size(); k++) {
+				if ((newCharArrayList.get(k) == '-')
+						|| (newCharArrayList.get(k) == '+')) {
+					NumberAndPosition numberAndPositionA = findA(
+							newCharArrayList, k);
+					NumberAndPosition numberAndPositionB = findB(
+							newCharArrayList, k);
+
+					if (newCharArrayList.get(k) == '-') {
+						resultAB = numberAndPositionA.getNumber()
+								- numberAndPositionB.getNumber();
+
+					} else if (newCharArrayList.get(k) == '+') {
+
+						resultAB = numberAndPositionA.getNumber()
+								+ numberAndPositionB.getNumber();
+					}
+					newCharArrayList = replaceList(newCharArrayList,
+							numberAndPositionA.getPosition(),
+							numberAndPositionB.getPosition(), resultAB);
+
+					break;
+				}
+			}
+		} while (resultAB != null);
+		return newCharArrayList;
+
+	}
+
+	private NumberAndPosition findA(List<Character> newCharArrayList, int k) {
 		NumberAndPosition numberAndPositionA = new NumberAndPosition();
 		StringBuilder s = new StringBuilder();
 		while ((0 <= --k)
-				&& ((Character.getNumericValue(newCharArray[k]) >= 0) || (newCharArray[k] == '.'))) {
-			s.append(newCharArray[k]);
+				&& ((Character.getNumericValue(newCharArrayList.get(k)) >= 0) || (newCharArrayList
+						.get(k) == '.'))) {
+			s.append(newCharArrayList.get(k));
 			numberAndPositionA.setPosition(k);
 		}
 		numberAndPositionA
@@ -105,17 +152,17 @@ public class Calculator {
 
 	}
 
-	private NumberAndPosition findB(char[] newCharArray, int k) {
+	private NumberAndPosition findB(List<Character> newCharArrayList, int k) {
 		NumberAndPosition numberAndPositionB = new NumberAndPosition();
 		StringBuilder s = new StringBuilder();
-		while ((newCharArray.length > ++k)
-				&& ((Character.getNumericValue(newCharArray[k]) >= 0) || (newCharArray[k] == '.'))) {
-			s.append(newCharArray[k]);
+		while ((newCharArrayList.size() > ++k)
+				&& ((Character.getNumericValue(newCharArrayList.get(k)) >= 0) || (newCharArrayList
+						.get(k) == '.'))) {
+			s.append(newCharArrayList.get(k));
 			numberAndPositionB.setPosition(k);
 		}
-		numberAndPositionB
-				.setNumber(Double.parseDouble(s.reverse().toString()));
 
+		numberAndPositionB.setNumber(Double.parseDouble(s.toString()));
 		return numberAndPositionB;
 
 	}
@@ -137,5 +184,22 @@ public class Calculator {
 	 * 
 	 * } }
 	 */
+
+	private List<Character> replaceList(List<Character> newCharArrayList,
+			int positionA, int positionB, Double resultAB) {
+		int quantityOfNumber = positionB - positionA;
+		while ((quantityOfNumber--) >= 0) {
+			newCharArrayList.remove(positionA);
+		}
+
+		char[] charArray = new StringBuilder(resultAB.toString()).reverse()
+				.toString().toCharArray();
+
+		for (int i = 0; i < charArray.length; i++) {
+			newCharArrayList.add(positionA, charArray[i]);
+		}
+
+		return newCharArrayList;
+	}
 
 }
