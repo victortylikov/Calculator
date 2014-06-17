@@ -1,6 +1,7 @@
 package calculator;
 
 import java.io.BufferedReader;
+import java.util.*;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -34,43 +35,42 @@ public class Calculator {
 			charArrayList.add(c);
 		}
 		findBrace(charArrayList);
-	
+		calculateMultiplyAndDivide(charArrayList);
+		calculateMinusAndPlus(charArrayList);
+		for (char zz : charArrayList) {
+			System.out.print(zz);
+		}
 	}
 
 	private void findBrace(List<Character> charArrayList) {
+		ListIterator<Character> li;
 		boolean flag = false;
-		do {
-			outer:
+		outer: do {
+			li = charArrayList.listIterator(0);
+			while (li.hasNext()) {
+				if (li.next() == ')') {
 
-			for (int i = 0; i < charArrayList.size(); i++) {
-				if (charArrayList.get(i) == ')') {
-					charArrayList.remove(i);
-					for (int j = i; j >= 0; j--) {
-						if (charArrayList.get(j) == '(') {
-							for (char c : charArrayList) {
-								System.out.print(c);
-							}
-							System.out.print("AAAAAA");
-							
+					int i = li.previousIndex();
+					li.remove();
+					do {
+
+						if (li.previous() == '(') {
+
+							li.remove();
+
+							int j = li.previousIndex();
 							List<Character> newCharArrayList = charArrayList
-									.subList(++j, i);
-							System.out.println();
-							for (char c : newCharArrayList) {
-								System.out.print(c);
-							}
-							System.out.println();
-							
-							calculateMultiplyAndDivide(newCharArrayList);
-							
-							calculateMinusAndPlus(newCharArrayList);
-									//
-							//charArrayList.remove(j);
-							flag = true;
-							
-							break outer;
+									.subList(++j, --i);
 
+							calculateMultiplyAndDivide(newCharArrayList);
+
+							calculateMinusAndPlus(newCharArrayList);
+
+							flag = true;
+							continue outer;
 						}
-					}
+					} while (li.hasPrevious());
+
 				}
 				flag = false;
 			}
@@ -98,7 +98,7 @@ public class Calculator {
 
 						resultAB = numberAndPositionA.getNumber()
 								/ numberAndPositionB.getNumber();
-						
+
 					}
 					newCharArrayList = replaceList(newCharArrayList,
 							numberAndPositionA.getPosition(),
@@ -117,9 +117,10 @@ public class Calculator {
 		Double resultAB = null;
 		do {
 			resultAB = null;
-			for (int k = 0; k < newCharArrayList.size(); k++) {
+			for (int k = 1; k < newCharArrayList.size(); k++) {
 				if ((newCharArrayList.get(k) == '-')
 						|| (newCharArrayList.get(k) == '+')) {
+
 					NumberAndPosition numberAndPositionA = findA(
 							newCharArrayList, k);
 					NumberAndPosition numberAndPositionB = findB(
@@ -142,7 +143,7 @@ public class Calculator {
 				}
 			}
 		} while (resultAB != null);
-		
+
 		return newCharArrayList;
 
 	}
@@ -158,28 +159,31 @@ public class Calculator {
 		}
 		numberAndPositionA
 				.setNumber(Double.parseDouble(s.reverse().toString()));
-		
+
 		return numberAndPositionA;
 
 	}
 
 	private NumberAndPosition findB(List<Character> newCharArrayList, int k) {
+		boolean negativeNumber = false;
 		NumberAndPosition numberAndPositionB = new NumberAndPosition();
 		StringBuilder s = new StringBuilder();
 		while ((newCharArrayList.size() > ++k)
 				&& ((Character.getNumericValue(newCharArrayList.get(k)) >= 0) || (newCharArrayList
-						.get(k) == '.')||(newCharArrayList
-								.get(k) == '-'))) {
+						.get(k) == '.')||((newCharArrayList
+								.get(k) == '-')&&(negativeNumber==false)))) {
+			if(newCharArrayList
+					.get(k) == '-'){negativeNumber=true;}
 			s.append(newCharArrayList.get(k));
 			numberAndPositionB.setPosition(k);
+			
 		}
 
 		numberAndPositionB.setNumber(Double.parseDouble(s.toString()));
-		
+
 		return numberAndPositionB;
 
 	}
-
 
 	private List<Character> replaceList(List<Character> newCharArrayList,
 			int positionA, int positionB, Double resultAB) {
